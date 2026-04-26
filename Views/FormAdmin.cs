@@ -128,12 +128,21 @@ namespace RIVEROSCRUZ_PATITASFELICES.Views
             DialogResult respuesta = MessageBox.Show("Desea eliminar esta reserva?", "Confirmar eliminacion", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
             if (respuesta == DialogResult.Yes)
             {
-                int id = Convert.ToInt32(dgvAgendamientos.CurrentRow.Cells["IdAgendamiento"].Value);
-                controller.Eliminar(id);
-                lblMensaje.ForeColor = Color.Green;
-                lblMensaje.Text = "Registro eliminado exitosamente";
-                lblMensaje.Visible = true;
-                CargarDatos();
+                try
+                {
+                    int id = Convert.ToInt32(dgvAgendamientos.CurrentRow.Cells["IdAgendamiento"].Value);
+                    controller.Eliminar(id);
+                    lblMensaje.ForeColor = Color.Green;
+                    lblMensaje.Text = "Registro eliminado exitosamente";
+                    lblMensaje.Visible = true;
+                    CargarDatos();
+                }
+                catch (ArgumentException ex)
+                {
+                    lblMensaje.ForeColor = Color.Red;
+                    lblMensaje.Text = ex.Message;
+                    lblMensaje.Visible = true;
+                }
             }
         }
 
