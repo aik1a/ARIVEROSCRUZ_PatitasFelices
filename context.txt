@@ -1,0 +1,643 @@
+INSTRUCCION OBLIGATORIA — LEER ANTES DE GENERAR CUALQUIER CODIGO:
+
+No inventes nada. No agregues tablas, columnas, modelos, formularios, ni funcionalidades
+que no esten listadas explicitamente en este prompt. Si algo no esta mencionado aqui,
+NO lo crees. No tomes decisiones creativas. Sigue este prompt al pie de la letra.
+
+Este proyecto es una TAREA UNIVERSITARIA de segundo ano. Debe ser simple, funcional y 
+exactamente lo que se pide. Nada mas, nada menos.
+
+============================================================
+INFORMACION DEL PROYECTO
+============================================================
+
+NOMBRE DEL PROYECTO (ya existe en Visual Studio): RIVEROSCRUZ_PATITASFELICES
+NAMESPACE: RIVEROSCRUZ_PATITASFELICES
+FRAMEWORK: C# .NET Framework 4.8
+TIPO: Aplicacion de escritorio Windows Forms
+BASE DE DATOS: SQL Server instancia local
+NOMBRE DE LA BASE DE DATOS: PatitasFelicesDB
+
+CARPETAS QUE YA EXISTEN en el proyecto (no crear nuevas):
+- Models/
+- Controllers/
+- Views/
+
+ARCHIVOS QUE YA EXISTEN (no crear nuevos fuera de las carpetas indicadas):
+- Program.cs (se debe modificar)
+- App.config (se debe modificar)
+- Form1.cs y Form1.Designer.cs (ELIMINAR estos dos archivos)
+
+============================================================
+REGLAS ABSOLUTAS — VIOLAR CUALQUIERA ES UN ERROR
+============================================================
+
+REGLA 1 — IDIOMA:
+- Todo texto visible al usuario debe estar en español
+- Todos los comentarios deben estar en español
+- PROHIBIDO usar estos caracteres en TODO el codigo: á é í ó ú ü ñ Á É Í Ó Ú Ü Ñ
+- Reemplazar: á→a, é→e, í→i, ó→o, ú→u, ñ→n
+- No usar secuencias unicode como alternativa
+
+REGLA 2 — ARQUITECTURA MVC ESTRICTA:
+- Models/ → SOLO clases con propiedades publicas. Sin metodos. Sin constructores con logica. Sin validaciones.
+- Controllers/ → TODA la logica: validaciones, conexion a BD, consultas SQL. Todo va aqui.
+- Views/ → SOLO interfaz grafica. Leer campos, llamar al controller, mostrar resultado. 
+  PROHIBIDO poner validaciones o SQL en los formularios.
+
+REGLA 3 — NO INVENTAR:
+- Solo crear los archivos listados en este prompt. Ni uno mas.
+- Solo crear las tablas listadas. Ni una mas.
+- Solo crear las columnas listadas. Ni una mas.
+- Solo crear los controles listados en cada formulario. Ni uno mas.
+- Solo crear los metodos listados en cada clase. Ni uno mas.
+- Si algo no esta en este prompt, NO EXISTE.
+
+REGLA 4 — TECNOLOGIA:
+- Usar SOLO System.Data.SqlClient para acceso a datos
+- Sin Entity Framework
+- Sin LINQ to SQL
+- Sin DataAdapter
+- Cada SqlConnection y SqlCommand dentro de bloques using()
+- Consultas parametrizadas siempre (usar @parametro, nunca concatenar strings)
+
+REGLA 5 — CODIGO COMPLETO:
+- Cada archivo debe estar completo y funcional
+- Sin comentarios de relleno como "// agregar codigo aqui" o "// TODO"
+- Sin metodos vacios
+- Sin codigo incompleto
+
+============================================================
+PASO 1 — SCRIPT SQL
+============================================================
+
+Crear el archivo: Scripts/CrearBaseDatos.sql
+
+El script debe contener EXACTAMENTE esto, en este orden, sin tablas ni columnas adicionales:
+
+--- inicio del contenido ---
+
+USE master;
+GO
+
+IF EXISTS (SELECT name FROM sys.databases WHERE name = 'PatitasFelicesDB')
+    DROP DATABASE PatitasFelicesDB;
+GO
+
+CREATE DATABASE PatitasFelicesDB;
+GO
+
+USE PatitasFelicesDB;
+GO
+
+CREATE TABLE Usuarios (
+    IdUsuario INT IDENTITY(1,1) PRIMARY KEY,
+    NombreUsuario VARCHAR(50) NOT NULL,
+    Clave VARCHAR(50) NOT NULL,
+    Rol VARCHAR(20) NOT NULL,
+    CONSTRAINT CHK_Rol CHECK (Rol IN ('cliente', 'admin'))
+);
+GO
+
+CREATE TABLE Agendamientos (
+    IdAgendamiento INT IDENTITY(1,1) PRIMARY KEY,
+    NombreDueno VARCHAR(100) NOT NULL,
+    Telefono VARCHAR(20) NOT NULL,
+    Correo VARCHAR(100) NOT NULL,
+    NombreMascota VARCHAR(50) NOT NULL,
+    TipoMascota VARCHAR(50) NOT NULL,
+    EdadMascota INT NOT NULL,
+    FechaAtencion DATE NOT NULL,
+    HoraAtencion TIME NOT NULL,
+    MotivoConsulta VARCHAR(255) NOT NULL,
+    Estado VARCHAR(20) NOT NULL DEFAULT 'Pendiente',
+    CONSTRAINT CHK_Estado CHECK (Estado IN ('Pendiente','Confirmada','Atendida','Cancelada'))
+);
+GO
+
+INSERT INTO Usuarios (NombreUsuario, Clave, Rol)
+VALUES 
+    ('admin123', 'admin123', 'admin'),
+    ('cliente123', 'cliente123', 'cliente');
+GO
+
+--- fin del contenido ---
+
+NO agregar mas tablas. NO agregar mas columnas. NO agregar mas inserts.
+Son EXACTAMENTE 2 tablas y 2 registros de prueba. Nada mas.
+
+============================================================
+PASO 2 — APP.CONFIG
+============================================================
+
+Modificar el archivo App.config existente. Reemplazar TODO su contenido con:
+
+--- inicio del contenido ---
+
+<?xml version="1.0" encoding="utf-8" ?>
+<configuration>
+    <startup>
+        <supportedRuntime version="v4.0" sku=".NETFramework,Version=v4.8" />
+    </startup>
+</configuration>
+
+--- fin del contenido ---
+
+NO agregar connectionStrings en App.config. La cadena de conexion va en el controller.
+
+============================================================
+PASO 3 — MODELS (2 archivos, ni uno mas)
+============================================================
+
+ARCHIVO: Models/Usuario.cs
+--- inicio del contenido esperado ---
+- namespace: RIVEROSCRUZ_PATITASFELICES.Models
+- Clase publica llamada Usuario
+- 4 propiedades publicas con get y set:
+  * int IdUsuario
+  * string NombreUsuario
+  * string Clave
+  * string Rol
+- NADA MAS. Sin constructores. Sin metodos. Sin override. Sin ToString.
+--- fin ---
+
+ARCHIVO: Models/Agendamiento.cs
+--- inicio del contenido esperado ---
+- namespace: RIVEROSCRUZ_PATITASFELICES.Models
+- Clase publica llamada Agendamiento
+- 11 propiedades publicas con get y set:
+  * int IdAgendamiento
+  * string NombreDueno
+  * string Telefono
+  * string Correo
+  * string NombreMascota
+  * string TipoMascota
+  * int EdadMascota
+  * DateTime FechaAtencion
+  * TimeSpan HoraAtencion
+  * string MotivoConsulta
+  * string Estado
+- NADA MAS. Sin constructores. Sin metodos. Sin override. Sin ToString.
+--- fin ---
+
+============================================================
+PASO 4 — CONTROLLERS (2 archivos, ni uno mas)
+============================================================
+
+ARCHIVO: Controllers/UsuarioController.cs
+--- inicio del contenido esperado ---
+- namespace: RIVEROSCRUZ_PATITASFELICES.Controllers
+- using System.Data.SqlClient y RIVEROSCRUZ_PATITASFELICES.Models
+- Clase publica no estatica llamada UsuarioController
+- UN metodo privado:
+  * private SqlConnection GetConnection()
+    - Crea y retorna new SqlConnection con esta cadena:
+      "Server=localhost;Database=PatitasFelicesDB;Integrated Security=True;"
+    - Agregar como comentario la alternativa:
+      // Si no conecta, cambiar a: "Server=.\\SQLEXPRESS;Database=PatitasFelicesDB;Integrated Security=True;"
+
+- UN metodo publico:
+  * public Usuario ValidarLogin(string nombreUsuario, string clave)
+    - Si nombreUsuario o clave estan vacios → throw new ArgumentException("Ingrese usuario y contrasena")
+    - Abrir conexion con using(SqlConnection con = GetConnection())
+    - con.Open()
+    - Ejecutar: SELECT IdUsuario, NombreUsuario, Clave, Rol FROM Usuarios WHERE NombreUsuario = @user AND Clave = @clave
+    - Usar SqlCommand con parametros @user y @clave
+    - Usar SqlDataReader dentro de using()
+    - Si reader.Read() es true → crear objeto Usuario con los 4 campos y retornarlo
+    - Si no encuentra resultado → throw new ArgumentException("Usuario o contrasena incorrectos")
+
+- NADA MAS. Sin otros metodos. Sin propiedades.
+--- fin ---
+
+ARCHIVO: Controllers/AgendamientoController.cs
+--- inicio del contenido esperado ---
+- namespace: RIVEROSCRUZ_PATITASFELICES.Controllers
+- using System, System.Collections.Generic, System.Data.SqlClient, System.Linq
+- using RIVEROSCRUZ_PATITASFELICES.Models
+- Clase publica no estatica llamada AgendamientoController
+
+- UN metodo privado para conexion:
+  * private SqlConnection GetConnection()
+    - Mismo contenido que UsuarioController.GetConnection()
+
+- UN metodo privado para validar:
+  * private void Validar(Agendamiento a)
+    - En este orden exacto de validaciones:
+      1. Si a.NombreDueno o a.Telefono o a.Correo o a.NombreMascota o a.TipoMascota o a.MotivoConsulta 
+         es null o string vacio → throw new ArgumentException("Todos los campos son obligatorios")
+      2. Si a.FechaAtencion < DateTime.Today → throw new ArgumentException("La fecha no puede ser anterior a hoy")
+      3. Si a.Telefono contiene caracteres que no son numeros → throw new ArgumentException("El telefono solo debe contener numeros")
+         (usar a.Telefono.All(char.IsDigit) para verificar, si es false lanzar la excepcion)
+      4. Si a.Correo no contiene "@" o no contiene "." → throw new ArgumentException("El correo no es valido")
+      5. Si a.EdadMascota <= 0 → throw new ArgumentException("La edad debe ser mayor a cero")
+
+- CINCO metodos publicos:
+
+  * public List<Agendamiento> GetAll()
+    - SELECT * FROM Agendamientos
+    - Retornar List<Agendamiento> con todos los registros
+    - Leer con SqlDataReader, crear objetos Agendamiento para cada fila
+    - Mapear columnas asi:
+      IdAgendamiento = reader.GetInt32(0)
+      NombreDueno = reader.GetString(1)
+      Telefono = reader.GetString(2)
+      Correo = reader.GetString(3)
+      NombreMascota = reader.GetString(4)
+      TipoMascota = reader.GetString(5)
+      EdadMascota = reader.GetInt32(6)
+      FechaAtencion = reader.GetDateTime(7)
+      HoraAtencion = (TimeSpan)reader["HoraAtencion"]
+      MotivoConsulta = reader.GetString(9)
+      Estado = reader.GetString(10)
+
+  * public List<Agendamiento> GetByEstado(string estado)
+    - SELECT * FROM Agendamientos WHERE Estado = @estado
+    - Parametro @estado
+    - Misma logica de lectura que GetAll()
+
+  * public bool Insertar(Agendamiento a)
+    - Primero llamar a Validar(a)
+    - INSERT INTO Agendamientos (NombreDueno, Telefono, Correo, NombreMascota, TipoMascota, EdadMascota, FechaAtencion, HoraAtencion, MotivoConsulta, Estado)
+      VALUES (@NombreDueno, @Telefono, @Correo, @NombreMascota, @TipoMascota, @EdadMascota, @FechaAtencion, @HoraAtencion, @MotivoConsulta, @Estado)
+    - Usar parametros para todos los valores
+    - Retornar true si ExecuteNonQuery() > 0
+
+  * public bool Actualizar(Agendamiento a)
+    - Primero llamar a Validar(a)
+    - UPDATE Agendamientos SET NombreDueno=@NombreDueno, Telefono=@Telefono, Correo=@Correo,
+      NombreMascota=@NombreMascota, TipoMascota=@TipoMascota, EdadMascota=@EdadMascota,
+      FechaAtencion=@FechaAtencion, HoraAtencion=@HoraAtencion, MotivoConsulta=@MotivoConsulta,
+      Estado=@Estado WHERE IdAgendamiento=@IdAgendamiento
+    - Retornar true si ExecuteNonQuery() > 0
+
+  * public bool Eliminar(int id)
+    - DELETE FROM Agendamientos WHERE IdAgendamiento = @id
+    - Retornar true si ExecuteNonQuery() > 0
+
+- NADA MAS. Sin otros metodos. Sin propiedades.
+--- fin ---
+
+============================================================
+PASO 5 — VIEWS (3 archivos, ni uno mas)
+============================================================
+
+IMPORTANTE SOBRE FORMULARIOS:
+- Cada formulario genera DOS archivos: NombreForm.cs y NombreForm.Designer.cs
+- El archivo Designer.cs contiene el metodo InitializeComponent() con TODOS los controles
+- Los controles deben crearse por codigo en InitializeComponent(), NO usar el disenador visual
+- Cada control debe tener: nombre, ubicacion (Location), tamano (Size), texto y propiedades especificadas
+- El formulario debe tener un tamano adecuado para que todos los controles se vean sin scroll
+
+------------------------------------------------------------
+ARCHIVO: Views/FormLogin.cs + Views/FormLogin.Designer.cs
+------------------------------------------------------------
+
+Propiedades del formulario:
+- Text = "Patitas Felices - Iniciar Sesion"
+- StartPosition = CenterScreen
+- FormBorderStyle = FixedSingle
+- MaximizeBox = false
+- Size adecuado para los controles (aprox 350 x 250)
+
+Controles (SOLO estos, en este orden):
+1. Label lblTitulo
+   - Text = "Patitas Felices"
+   - Font = negrita, tamano 16
+   - Centrado en la parte superior
+
+2. Label lblUsuario
+   - Text = "Usuario:"
+
+3. TextBox txtUsuario
+
+4. Label lblClave
+   - Text = "Contrasena:"
+
+5. TextBox txtClave
+   - PasswordChar = '*'
+
+6. Button btnIngresar
+   - Text = "Ingresar"
+
+7. Label lblError
+   - Visible = false
+   - ForeColor = Color.Red
+   - Text = ""
+
+Logica en FormLogin.cs:
+- El formulario hereda de Form: public partial class FormLogin : Form
+- Constructor: InitializeComponent()
+- Evento btnIngresar_Click:
+  * Crear instancia: UsuarioController controller = new UsuarioController();
+  * Dentro de try-catch:
+    - Usuario usuario = controller.ValidarLogin(txtUsuario.Text, txtClave.Text);
+    - Si usuario.Rol == "admin":
+        FormAdmin formAdmin = new FormAdmin();
+        formAdmin.Show();
+        this.Hide();
+    - Si usuario.Rol == "cliente":
+        FormReserva formReserva = new FormReserva();
+        formReserva.Show();
+        this.Hide();
+  * En el catch (ArgumentException ex):
+    - lblError.Text = ex.Message;
+    - lblError.Visible = true;
+
+- Sobreescribir OnFormClosing:
+  protected override void OnFormClosing(FormClosingEventArgs e)
+  {
+      Application.Exit();
+  }
+
+- SIN validaciones propias. SIN SQL. Solo llamar al controller.
+
+------------------------------------------------------------
+ARCHIVO: Views/FormReserva.cs + Views/FormReserva.Designer.cs
+------------------------------------------------------------
+
+Propiedades del formulario:
+- Text = "Patitas Felices - Nueva Reserva"
+- StartPosition = CenterScreen
+- Size adecuado para todos los controles (aprox 450 x 550)
+
+Controles (SOLO estos):
+1. Label + TextBox txtNombreDueno (Label text: "Nombre del dueno:")
+2. Label + TextBox txtTelefono (Label text: "Telefono:")
+3. Label + TextBox txtCorreo (Label text: "Correo:")
+4. Label + TextBox txtNombreMascota (Label text: "Nombre de la mascota:")
+5. Label + TextBox txtTipoMascota (Label text: "Tipo de mascota:")
+6. Label + TextBox txtEdadMascota (Label text: "Edad de la mascota:")
+7. Label + DateTimePicker dtpFecha (Label text: "Fecha de atencion:")
+   - dtpFecha.MinDate = DateTime.Today
+8. Label + DateTimePicker dtpHora (Label text: "Hora de atencion:")
+   - dtpHora.Format = DateTimePickerFormat.Time
+   - dtpHora.ShowUpDown = true
+9. Label + TextBox txtMotivo (Label text: "Motivo de consulta:")
+   - txtMotivo.Multiline = true
+   - txtMotivo.Height = 60
+10. Button btnGuardar (Text = "Guardar Reserva")
+11. Button btnSalir (Text = "Salir")
+12. Label lblMensaje (Visible = false, Text = "")
+
+Logica en FormReserva.cs:
+- public partial class FormReserva : Form
+- Constructor: InitializeComponent()
+- Evento btnGuardar_Click:
+  * Crear objeto Agendamiento manualmente:
+    Agendamiento agendamiento = new Agendamiento();
+    agendamiento.NombreDueno = txtNombreDueno.Text;
+    agendamiento.Telefono = txtTelefono.Text;
+    agendamiento.Correo = txtCorreo.Text;
+    agendamiento.NombreMascota = txtNombreMascota.Text;
+    agendamiento.TipoMascota = txtTipoMascota.Text;
+    agendamiento.MotivoConsulta = txtMotivo.Text;
+    agendamiento.FechaAtencion = dtpFecha.Value.Date;
+    agendamiento.HoraAtencion = dtpHora.Value.TimeOfDay;
+    agendamiento.Estado = "Pendiente";  ← FIJO, el usuario no elige esto
+  * Para EdadMascota: intentar int.TryParse(txtEdadMascota.Text, out int edad)
+    - Si falla el parse: mostrar error "La edad debe ser un numero"
+    - Si funciona: agendamiento.EdadMascota = edad;
+  * Dentro de try-catch:
+    - AgendamientoController controller = new AgendamientoController();
+    - controller.Insertar(agendamiento);
+    - lblMensaje.ForeColor = Color.Green;
+    - lblMensaje.Text = "Reserva registrada exitosamente";
+    - lblMensaje.Visible = true;
+    - Llamar a un metodo privado LimpiarCampos() que ponga todos los TextBox en ""
+      y resetee los DateTimePicker a sus valores por defecto
+  * En catch (ArgumentException ex):
+    - lblMensaje.ForeColor = Color.Red;
+    - lblMensaje.Text = ex.Message;
+    - lblMensaje.Visible = true;
+
+- Evento btnSalir_Click:
+  * FormLogin login = new FormLogin();
+  * login.Show();
+  * this.Close();
+
+- Metodo privado LimpiarCampos():
+  * txtNombreDueno.Text = "";
+  * txtTelefono.Text = "";
+  * txtCorreo.Text = "";
+  * txtNombreMascota.Text = "";
+  * txtTipoMascota.Text = "";
+  * txtEdadMascota.Text = "";
+  * txtMotivo.Text = "";
+  * dtpFecha.Value = DateTime.Today;
+  * dtpHora.Value = DateTime.Today;
+
+- SIN validaciones propias. SIN SQL.
+
+------------------------------------------------------------
+ARCHIVO: Views/FormAdmin.cs + Views/FormAdmin.Designer.cs
+------------------------------------------------------------
+
+Propiedades del formulario:
+- Text = "Patitas Felices - Panel de Administrador"
+- StartPosition = CenterScreen
+- Size grande para todo el contenido (aprox 900 x 700)
+- WindowState = Normal
+
+Layout: dos secciones visuales separadas
+- SECCION SUPERIOR: filtro + DataGridView
+- SECCION INFERIOR: campos de formulario + botones
+
+Controles SECCION SUPERIOR (en este orden):
+1. Label lblFiltro (Text = "Filtrar por estado:")
+2. ComboBox cmbFiltroEstado
+   - DropDownStyle = DropDownList
+   - Items: "Todos", "Pendiente", "Confirmada", "Atendida", "Cancelada"
+   - SelectedIndex = 0 (que inicie en "Todos")
+3. Button btnCargar (Text = "Cargar Registros")
+4. DataGridView dgvAgendamientos
+   - ReadOnly = true
+   - SelectionMode = FullRowSelect
+   - MultiSelect = false
+   - AllowUserToAddRows = false
+   - AllowUserToDeleteRows = false
+   - AutoSizeColumnsMode = Fill
+   - Tamano: que ocupe el ancho del formulario con margen, alto aprox 250px
+
+Controles SECCION INFERIOR (campos de edicion):
+5. Label + TextBox txtNombreDueno (Label: "Nombre del dueno:")
+6. Label + TextBox txtTelefono (Label: "Telefono:")
+7. Label + TextBox txtCorreo (Label: "Correo:")
+8. Label + TextBox txtNombreMascota (Label: "Nombre de la mascota:")
+9. Label + TextBox txtTipoMascota (Label: "Tipo de mascota:")
+10. Label + TextBox txtEdadMascota (Label: "Edad de la mascota:")
+11. Label + DateTimePicker dtpFecha (Label: "Fecha de atencion:")
+    - MinDate = DateTime.Today
+12. Label + DateTimePicker dtpHora (Label: "Hora de atencion:")
+    - Format = Time, ShowUpDown = true
+13. Label + TextBox txtMotivo (Label: "Motivo de consulta:")
+14. Label lblEstado (Text: "Estado:")
+15. ComboBox cmbEstado
+    - DropDownStyle = DropDownList
+    - Items: "Pendiente", "Confirmada", "Atendida", "Cancelada"
+16. Button btnInsertar (Text = "Insertar")
+17. Button btnActualizar (Text = "Actualizar")
+18. Button btnEliminar (Text = "Eliminar")
+19. Button btnSalir (Text = "Salir")
+20. Label lblMensaje (Visible = false, Text = "")
+
+Logica en FormAdmin.cs:
+- public partial class FormAdmin : Form
+- Declarar variable de instancia: private AgendamientoController controller = new AgendamientoController();
+- Constructor: InitializeComponent(); luego llamar a CargarDatos();
+
+- Metodo privado CargarDatos():
+  * dgvAgendamientos.DataSource = null;
+  * dgvAgendamientos.DataSource = controller.GetAll();
+
+- Evento btnCargar_Click:
+  * Llamar a CargarDatos()
+
+- Evento cmbFiltroEstado_SelectedIndexChanged:
+  * string filtro = cmbFiltroEstado.SelectedItem.ToString();
+  * Si filtro == "Todos" → dgvAgendamientos.DataSource = controller.GetAll();
+  * Si no → dgvAgendamientos.DataSource = controller.GetByEstado(filtro);
+
+- Evento dgvAgendamientos_SelectionChanged:
+  * Si dgvAgendamientos.CurrentRow == null → return
+  * DataGridViewRow fila = dgvAgendamientos.CurrentRow;
+  * txtNombreDueno.Text = fila.Cells["NombreDueno"].Value.ToString();
+  * txtTelefono.Text = fila.Cells["Telefono"].Value.ToString();
+  * txtCorreo.Text = fila.Cells["Correo"].Value.ToString();
+  * txtNombreMascota.Text = fila.Cells["NombreMascota"].Value.ToString();
+  * txtTipoMascota.Text = fila.Cells["TipoMascota"].Value.ToString();
+  * txtEdadMascota.Text = fila.Cells["EdadMascota"].Value.ToString();
+  * dtpFecha.Value = Convert.ToDateTime(fila.Cells["FechaAtencion"].Value);
+  * Para HoraAtencion: dtpHora.Value = DateTime.Today.Add((TimeSpan)fila.Cells["HoraAtencion"].Value);
+  * txtMotivo.Text = fila.Cells["MotivoConsulta"].Value.ToString();
+  * cmbEstado.SelectedItem = fila.Cells["Estado"].Value.ToString();
+
+- Metodo privado Agendamiento ObtenerAgendamientoDesdeCampos():
+  * Crea un nuevo Agendamiento con los datos de los TextBox y pickers
+  * Para EdadMascota: usar int.TryParse, si falla throw new ArgumentException("La edad debe ser un numero")
+  * Retorna el objeto
+
+- Evento btnInsertar_Click:
+  * try:
+    - Agendamiento a = ObtenerAgendamientoDesdeCampos();
+    - a.Estado = cmbEstado.SelectedItem.ToString();
+    - controller.Insertar(a);
+    - lblMensaje.ForeColor = Color.Green;
+    - lblMensaje.Text = "Registro insertado exitosamente";
+    - lblMensaje.Visible = true;
+    - CargarDatos();
+  * catch (ArgumentException ex):
+    - lblMensaje.ForeColor = Color.Red;
+    - lblMensaje.Text = ex.Message;
+    - lblMensaje.Visible = true;
+
+- Evento btnActualizar_Click:
+  * Si dgvAgendamientos.CurrentRow == null → return
+  * try:
+    - Agendamiento a = ObtenerAgendamientoDesdeCampos();
+    - a.IdAgendamiento = Convert.ToInt32(dgvAgendamientos.CurrentRow.Cells["IdAgendamiento"].Value);
+    - a.Estado = cmbEstado.SelectedItem.ToString();
+    - controller.Actualizar(a);
+    - lblMensaje.ForeColor = Color.Green;
+    - lblMensaje.Text = "Registro actualizado exitosamente";
+    - lblMensaje.Visible = true;
+    - CargarDatos();
+  * catch (ArgumentException ex):
+    - lblMensaje.ForeColor = Color.Red;
+    - lblMensaje.Text = ex.Message;
+    - lblMensaje.Visible = true;
+
+- Evento btnEliminar_Click:
+  * Si dgvAgendamientos.CurrentRow == null → return
+  * DialogResult respuesta = MessageBox.Show("Desea eliminar esta reserva?", "Confirmar eliminacion", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+  * Si respuesta == DialogResult.Yes:
+    - int id = Convert.ToInt32(dgvAgendamientos.CurrentRow.Cells["IdAgendamiento"].Value);
+    - controller.Eliminar(id);
+    - lblMensaje.ForeColor = Color.Green;
+    - lblMensaje.Text = "Registro eliminado exitosamente";
+    - lblMensaje.Visible = true;
+    - CargarDatos();
+
+- Evento btnSalir_Click:
+  * FormLogin login = new FormLogin();
+  * login.Show();
+  * this.Close();
+
+- SIN validaciones propias. SIN SQL directo. Todo pasa por el controller.
+
+============================================================
+PASO 6 — PROGRAM.CS
+============================================================
+
+Reemplazar TODO el contenido de Program.cs con:
+
+using System;
+using System.Windows.Forms;
+using RIVEROSCRUZ_PATITASFELICES.Views;
+
+namespace RIVEROSCRUZ_PATITASFELICES
+{
+    static class Program
+    {
+        [STAThread]
+        static void Main()
+        {
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+            Application.Run(new FormLogin());
+        }
+    }
+}
+
+============================================================
+PASO 7 — ELIMINAR ARCHIVOS SOBRANTES
+============================================================
+
+Eliminar estos archivos del proyecto:
+- Form1.cs
+- Form1.Designer.cs
+
+Si existen archivos de la sesion anterior, eliminar tambien:
+- Models/Cita.cs
+- Models/Cliente.cs
+- Models/Mascota.cs
+- Models/Producto.cs
+- Models/Servicio.cs
+- Models/Veterinario.cs
+- Controllers/ConexionDB.cs
+
+============================================================
+RESUMEN FINAL — LISTA COMPLETA DE ARCHIVOS A CREAR/MODIFICAR
+============================================================
+
+CREAR (archivos nuevos):
+1. Scripts/CrearBaseDatos.sql
+2. Models/Usuario.cs
+3. Models/Agendamiento.cs
+4. Controllers/UsuarioController.cs
+5. Controllers/AgendamientoController.cs
+6. Views/FormLogin.cs
+7. Views/FormLogin.Designer.cs
+8. Views/FormReserva.cs
+9. Views/FormReserva.Designer.cs
+10. Views/FormAdmin.cs
+11. Views/FormAdmin.Designer.cs
+
+MODIFICAR:
+12. Program.cs (reemplazar contenido)
+13. App.config (reemplazar contenido)
+
+ELIMINAR:
+14. Form1.cs
+15. Form1.Designer.cs
+16. Cualquier archivo sobrante de la sesion anterior en Models/ y Controllers/
+
+TOTAL DE ARCHIVOS EN EL PROYECTO FINAL: 11 archivos de codigo + App.config + Program.cs + el script SQL
+NO DEBE EXISTIR ningun otro archivo .cs creado por este prompt.
+
+============================================================
+EJECUCION
+============================================================
+
+Ejecutar todos los pasos en orden del 1 al 7.
+Al terminar confirmar con una lista de todos los archivos creados, modificados y eliminados.

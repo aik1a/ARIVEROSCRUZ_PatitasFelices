@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(\"/d/VS/Visual Studio/MSBuild/Current/Bin/MSBuild.exe\" \"C:/Users/howle/source/repos/ARIVEROSCRUZ_PatitasFelices/ARIVEROSCRUZ_PatitasFelices.csproj\" -nologo -v:minimal)"
+    ]
+  }
+}
