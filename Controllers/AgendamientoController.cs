@@ -11,7 +11,7 @@ namespace RIVEROSCRUZ_PATITASFELICES.Controllers
         private SqlConnection GetConnection()
         {
             // Si no conecta, cambiar a: "Server=.\\SQLEXPRESS;Database=PatitasFelicesDB;Integrated Security=True;"
-            return new SqlConnection("Server=localhost;Database=PatitasFelicesDB;Integrated Security=True;");
+            return new SqlConnection("Server=(localdb)\\MSSQLLocalDB;Database=PatitasFelicesDB;Integrated Security=True;");
         }
 
         private void Validar(Agendamiento a)
